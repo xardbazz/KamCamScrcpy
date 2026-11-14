@@ -6,19 +6,21 @@ import subprocess
 import tkinter as tk
 from tkinter import messagebox
 
-# ============ PHONE RESOLUTION ============
-phone_size = {"w": 720, "h": 1520}
-current_target_device = ""
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ADB_DIR = os.path.join(BASE_DIR, "adb")
+SCRCPY_DIR = os.path.join(BASE_DIR, "scrcpy")
 
-# OS Detection & Pathing
-if getattr(sys, 'frozen', False):
-    SCRIPT_DIR = os.path.dirname(sys.executable)
-else:
-    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Add both subfolders to the system PATH
+os.environ["PATH"] += os.pathsep + ADB_DIR
+os.environ["PATH"] += os.pathsep + SCRCPY_DIR
 
 if platform.system() == "Windows":
-    ADB_PATH = os.path.join(SCRIPT_DIR, "adb.exe") if os.path.exists(os.path.join(SCRIPT_DIR, "adb.exe")) else "adb"
-    SCRCPY_PATH = os.path.join(SCRIPT_DIR, "scrcpy.exe") if os.path.exists(os.path.join(SCRIPT_DIR, "scrcpy.exe")) else "scrcpy"
+    # Explicitly point to the subfolders
+    ADB_EXE = os.path.join(ADB_DIR, "adb.exe")
+    ADB_PATH = ADB_EXE if os.path.exists(ADB_EXE) else "adb"
+    
+    SCRCPY_EXE = os.path.join(SCRCPY_DIR, "scrcpy.exe")
+    SCRCPY_PATH = SCRCPY_EXE if os.path.exists(SCRCPY_EXE) else "scrcpy"
 else:
     ADB_PATH = "adb"
     SCRCPY_PATH = "scrcpy"
