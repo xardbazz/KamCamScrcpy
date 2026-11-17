@@ -355,8 +355,18 @@ def start_scrcpy_control():
     cmd = [SCRCPY_PATH, "-s", current_target_device, "--window-title=KamCam Remote Control"]
     if hwdec_disabled_var.get():
         cmd.append("--hwdec=disabled")
+        
+    # --- NEW AUDIO LOGIC ---
     if audio_disabled_var.get():
         cmd.append("--no-audio")
+    else:
+        if get_android_sdk() >= 30:
+            cmd.append("--audio-source=mic")
+        else:
+            messagebox.showwarning("Audio Not Supported", "Microphone capture requires Android 11+.\nStarting without audio.")
+            cmd.append("--no-audio")
+    # -----------------------
+
     bitrate = bitrate_var.get()
     if bitrate != "Default":
         cmd.append(f"--video-bit-rate={bitrate}")
@@ -390,8 +400,18 @@ def start_scrcpy_camera():
         cmd.append(f"--video-bit-rate={bitrate}")
     if hwdec_disabled_var.get():
         cmd.append("--hwdec=disabled")
+        
+    # --- NEW AUDIO LOGIC ---
     if audio_disabled_var.get():
         cmd.append("--no-audio")
+    else:
+        if sdk >= 30:
+            cmd.append("--audio-source=mic")
+        else:
+            messagebox.showwarning("Audio Not Supported", "Microphone capture requires Android 11+.\nStarting without audio.")
+            cmd.append("--no-audio")
+    # -----------------------
+
     crop = build_crop_flag()
     if crop:
         cmd.append(crop)
@@ -434,9 +454,9 @@ def toggle_audio():
 
 def update_audio_ui():
     if audio_disabled_var.get():
-        btn_audio_toggle.config(text="Audio Capture: DISABLED", bg="#f38ba8")
+        btn_audio_toggle.config(text="Microphone: DISABLED", bg="#f38ba8")
     else:
-        btn_audio_toggle.config(text="Audio Capture: ENABLED", bg="#a6e3a1")
+        btn_audio_toggle.config(text="Microphone: ENABLED", bg="#a6e3a1")
 
 def toggle_console():
     if platform.system() != "Windows":
